@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 project(
-  NewPlugin
+  CollisionDetectionResidualError
   LANGUAGES CXX
   VERSION 1.0.0)
 
@@ -14,18 +14,24 @@ if(NOT TARGET mc_rtc::mc_control)
 endif()
 
 # Configure and install the plugin configuration
-configure_file(etc/NewPlugin.in.yaml
-               "${CMAKE_CURRENT_BINARY_DIR}/etc/NewPlugin.yaml")
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/etc/NewPlugin.yaml"
+configure_file(etc/CollisionDetectionResidualError.in.yaml
+               "${CMAKE_CURRENT_BINARY_DIR}/etc/CollisionDetectionResidualError.yaml")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/etc/CollisionDetectionResidualError.yaml"
         DESTINATION "${MC_PLUGINS_RUNTIME_INSTALL_PREFIX}/etc")
 
-set(plugin_SRC src/NewPlugin.cpp)
+set(plugin_SRC 
+src/CollisionDetectionResidualError.cpp
+src/LpfThreshold.cpp
+)
 
-set(plugin_HDR src/NewPlugin.h)
+set(plugin_HDR 
+src/CollisionDetectionResidualError.h
+src/LpfThreshold.h
+)
 
 # The add_plugin macro is provided by mc_rtc
-add_plugin(NewPlugin "${plugin_SRC}" "${plugin_HDR}")
+add_plugin(CollisionDetectionResidualError "${plugin_SRC}" "${plugin_HDR}")
 
-if(BUILD_TESTING)
-  add_subdirectory(tests)
-endif()
+# if(BUILD_TESTING)
+#   add_subdirectory(tests)
+# endif()

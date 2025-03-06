@@ -11,13 +11,13 @@ It comes with:
 Quick start
 --
 
-1. Renaming the controller from `NewPlugin` to `MyPlugin`. In a shell (Git Bash on Windows, replace sed with gsed on macOS):
+1. Renaming the controller from `CollisionDetectionResidualError` to `MyPlugin`. In a shell (Git Bash on Windows, replace sed with gsed on macOS):
 
 ```bash
-sed -i -e's/NewPlugin/MyPlugin/g' `find . -type f`
-git mv src/NewPlugin.cpp src/MyPlugin.cpp
-git mv src/NewPlugin.h src/MyPlugin.h
-git mv etc/NewPlugin.in.yaml etc/MyPlugin.in.yaml
+sed -i -e's/CollisionDetectionResidualError/MyPlugin/g' `find . -type f`
+git mv src/CollisionDetectionResidualError.cpp src/MyPlugin.cpp
+git mv src/CollisionDetectionResidualError.h src/MyPlugin.h
+git mv etc/CollisionDetectionResidualError.in.yaml etc/MyPlugin.in.yaml
 ```
 
 2. You can customize the project name in vcpkg.json as well, note that this must follow [vcpkg manifest rules](https://github.com/microsoft/vcpkg/blob/master/docs/users/manifests.md)

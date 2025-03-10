@@ -18,7 +18,7 @@
 namespace mc_plugin
 {
 
-struct CollisionDetectionResidualError : public mc_control::GlobalPlugin
+struct CollisionDetectionMomentumError : public mc_control::GlobalPlugin
 {
   void init(mc_control::MCGlobalController & controller, const mc_rtc::Configuration & config) override;
 
@@ -36,7 +36,7 @@ struct CollisionDetectionResidualError : public mc_control::GlobalPlugin
 
   mc_control::GlobalPlugin::GlobalPluginConfiguration configuration() override;
 
-  ~CollisionDetectionResidualError() override;
+  ~CollisionDetectionMomentumError() override;
 
 private:
 
@@ -53,8 +53,8 @@ private:
   Eigen::VectorXd tau;
   Eigen::VectorXd momentum_error;
 
-  double alpha_1 = 10.0;
-  double alpha_2 = 10.0;
+  double alpha_1 = 200.0;
+  double alpha_2 = 100.0;
 
   rbd::Coriolis * coriolis;
   rbd::ForwardDynamics forwardDynamics;

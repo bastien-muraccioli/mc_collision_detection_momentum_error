@@ -1,13 +1,14 @@
-#include "CollisionDetectionResidualError.h"
+#include "CollisionDetectionMomentumError.h"
 
 #include <mc_control/GlobalPluginMacros.h>
+#include <mc_rtc/gui/IntegerInput.h>
 
 namespace mc_plugin
 {
 
-CollisionDetectionResidualError::~CollisionDetectionResidualError() = default;
+CollisionDetectionMomentumError::~CollisionDetectionMomentumError() = default;
 
-void CollisionDetectionResidualError::init(mc_control::MCGlobalController & controller, const mc_rtc::Configuration & config)
+void CollisionDetectionMomentumError::init(mc_control::MCGlobalController & controller, const mc_rtc::Configuration & config)
 {
 
   auto & ctl = static_cast<mc_control::MCGlobalController &>(controller);
@@ -64,10 +65,10 @@ void CollisionDetectionResidualError::init(mc_control::MCGlobalController & cont
   addGui(ctl);
   addLog(ctl);
 
-  mc_rtc::log::info("CollisionDetectionResidualError::init called with configuration:\n{}", config.dump(true, true));
+  mc_rtc::log::info("CollisionDetectionMomentumError::init called with configuration:\n{}", config.dump(true, true));
 }
 
-void CollisionDetectionResidualError::computeGammaAndMomentum(mc_control::MCGlobalController & controller)
+void CollisionDetectionMomentumError::computeGammaAndMomentum(mc_control::MCGlobalController & controller)
 {
   auto & ctl = static_cast<mc_control::MCGlobalController &>(controller);
 
@@ -93,12 +94,12 @@ void CollisionDetectionResidualError::computeGammaAndMomentum(mc_control::MCGlob
   gamma = tau + (coriolisMatrix + coriolisMatrix.transpose()) * qdot - coriolisGravityTerm;
 }
 
-void CollisionDetectionResidualError::reset(mc_control::MCGlobalController & controller)
+void CollisionDetectionMomentumError::reset(mc_control::MCGlobalController & controller)
 {
-  mc_rtc::log::info("CollisionDetectionResidualError::reset called");
+  mc_rtc::log::info("CollisionDetectionMomentumError::reset called");
 }
 
-void CollisionDetectionResidualError::before(mc_control::MCGlobalController & controller)
+void CollisionDetectionMomentumError::before(mc_control::MCGlobalController & controller)
 {
   auto & ctl = static_cast<mc_control::MCGlobalController &>(controller);
   counter += dt;
@@ -133,15 +134,15 @@ void CollisionDetectionResidualError::before(mc_control::MCGlobalController & co
         break;
     }
   }
-  // mc_rtc::log::info("CollisionDetectionResidualError::before");
+  // mc_rtc::log::info("CollisionDetectionMomentumError::before");
 }
 
-void CollisionDetectionResidualError::after(mc_control::MCGlobalController & controller)
+void CollisionDetectionMomentumError::after(mc_control::MCGlobalController & controller)
 {
-  // mc_rtc::log::info("CollisionDetectionResidualError::after");
+  // mc_rtc::log::info("CollisionDetectionMomentumError::after");
 }
 
-mc_control::GlobalPlugin::GlobalPluginConfiguration CollisionDetectionResidualError::configuration()
+mc_control::GlobalPlugin::GlobalPluginConfiguration CollisionDetectionMomentumError::configuration()
 {
   mc_control::GlobalPlugin::GlobalPluginConfiguration out;
   out.should_run_before = true;
@@ -150,13 +151,13 @@ mc_control::GlobalPlugin::GlobalPluginConfiguration CollisionDetectionResidualEr
   return out;
 }
 
-void CollisionDetectionResidualError::addPlot(mc_control::MCGlobalController & controller)
+void CollisionDetectionMomentumError::addPlot(mc_control::MCGlobalController & controller)
 {
   auto & ctl = static_cast<mc_control::MCGlobalController &>(controller);
   auto & gui = *ctl.controller().gui();
 
   gui.addPlot(
-      "CollisionDetectionResidualError_momentum",
+      "CollisionDetectionMomentumError_momentum",
       mc_rtc::gui::plot::X(
           "t", [this]() { return counter; }),
       mc_rtc::gui::plot::Y(
@@ -166,7 +167,7 @@ void CollisionDetectionResidualError::addPlot(mc_control::MCGlobalController & c
       );
 
   gui.addPlot(
-      "CollisionDetectionResidualError_tau_ext_hat",
+      "CollisionDetectionMomentumError_tau_ext_hat",
       mc_rtc::gui::plot::X(
           "t", [this]() { return counter; }),
       mc_rtc::gui::plot::Y(
@@ -174,7 +175,7 @@ void CollisionDetectionResidualError::addPlot(mc_control::MCGlobalController & c
       );
 
   gui.addPlot(
-      "CollisionDetectionResidualError_momentum_dot",
+      "CollisionDetectionMomentumError_momentum_dot",
       mc_rtc::gui::plot::X(
           "t", [this]() { return counter; }),
       mc_rtc::gui::plot::Y(
@@ -182,7 +183,7 @@ void CollisionDetectionResidualError::addPlot(mc_control::MCGlobalController & c
       );
 
   gui.addPlot(
-    "CollisionDetectionResidualError_momentum_error",
+    "CollisionDetectionMomentumError_momentum_error",
     mc_rtc::gui::plot::X(
         "t", [this]() { return counter; }),
         mc_rtc::gui::plot::Y(
@@ -194,27 +195,27 @@ void CollisionDetectionResidualError::addPlot(mc_control::MCGlobalController & c
     );
 }
 
-void CollisionDetectionResidualError::addLog(mc_control::MCGlobalController & controller)
+void CollisionDetectionMomentumError::addLog(mc_control::MCGlobalController & controller)
 {
   auto & ctl = static_cast<mc_control::MCGlobalController &>(controller);
-  ctl.controller().logger().addLogEntry("CollisionDetectionResidualError_momentum", [this]() { return momentum; });
-  ctl.controller().logger().addLogEntry("CollisionDetectionResidualError_momentum_hat", [this]() { return momentum_hat; });
-  ctl.controller().logger().addLogEntry("CollisionDetectionResidualError_momentum_hat_dot", [this]() { return momentum_hat_dot; });
-  ctl.controller().logger().addLogEntry("CollisionDetectionResidualError_tau_ext_hat", [this]() { return tau_ext_hat; });
-  ctl.controller().logger().addLogEntry("CollisionDetectionResidualError_tau_ext_hat_dot", [this]() { return tau_ext_hat_dot; });
-  ctl.controller().logger().addLogEntry("CollisionDetectionResidualError_gamma", [this]() { return gamma; });
-  ctl.controller().logger().addLogEntry("CollisionDetectionResidualError_momentum_error", [this]() { return momentum_error; });
-  ctl.controller().logger().addLogEntry("CollisionDetectionResidualError_momentum_error_high", [this]() { return momentum_error_high_; });
-  ctl.controller().logger().addLogEntry("CollisionDetectionResidualError_momentum_error_low", [this]() { return momentum_error_low_; });
-  ctl.controller().logger().addLogEntry("CollisionDetectionResidualError_obstacleDetected", [this]() { return obstacle_detected_; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionMomentumError_momentum", [this]() { return momentum; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionMomentumError_momentum_hat", [this]() { return momentum_hat; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionMomentumError_momentum_hat_dot", [this]() { return momentum_hat_dot; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionMomentumError_tau_ext_hat", [this]() { return tau_ext_hat; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionMomentumError_tau_ext_hat_dot", [this]() { return tau_ext_hat_dot; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionMomentumError_gamma", [this]() { return gamma; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionMomentumError_momentum_error", [this]() { return momentum_error; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionMomentumError_momentum_error_high", [this]() { return momentum_error_high_; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionMomentumError_momentum_error_low", [this]() { return momentum_error_low_; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionMomentumError_obstacleDetected", [this]() { return obstacle_detected_; });
 }
 
-void CollisionDetectionResidualError::addGui(mc_control::MCGlobalController & controller)
+void CollisionDetectionMomentumError::addGui(mc_control::MCGlobalController & controller)
 {
   auto & ctl = static_cast<mc_control::MCGlobalController &>(controller);
   auto & gui = *ctl.controller().gui();
 
-  ctl.controller().gui()->addElement({"Plugins", "CollisionDetectionResidualError"},
+  ctl.controller().gui()->addElement({"Plugins", "CollisionDetectionMomentumError"},
     mc_rtc::gui::Button("Add plot", [this]() { return activate_plot_ = true; }),
     // Add checkbox to activate the collision stop
     mc_rtc::gui::Checkbox("Collision stop", collision_stop_activated_), 
@@ -234,7 +235,7 @@ void CollisionDetectionResidualError::addGui(mc_control::MCGlobalController & co
       })                                                                         
     );
 
-  gui.addElement({"Plugins", "CollisionDetectionResidualError"},
+  gui.addElement({"Plugins", "CollisionDetectionMomentumError"},
       mc_rtc::gui::NumberInput(
           "alpha_1", [this]() { return alpha_1; },
           [this](double alpha)
@@ -242,7 +243,7 @@ void CollisionDetectionResidualError::addGui(mc_control::MCGlobalController & co
             this->alpha_1 = alpha;
           }));
 
-  gui.addElement({"Plugins", "CollisionDetectionResidualError"},
+  gui.addElement({"Plugins", "CollisionDetectionMomentumError"},
       mc_rtc::gui::NumberInput(
           "alpha_2", [this]() { return alpha_2; },
           [this](double alpha)
@@ -250,8 +251,8 @@ void CollisionDetectionResidualError::addGui(mc_control::MCGlobalController & co
             this->alpha_2 = alpha;
           }));
 
-  gui.addElement({"Plugins", "CollisionDetectionResidualError"},
-      mc_rtc::gui::NumberInput(
+  gui.addElement({"Plugins", "CollisionDetectionMomentumError"},
+      mc_rtc::gui::IntegerInput(
           "jointShown", [this]() { return jointShown; },
           [this](int joint)
           {
@@ -261,4 +262,4 @@ void CollisionDetectionResidualError::addGui(mc_control::MCGlobalController & co
 
 } // namespace mc_plugin
 
-EXPORT_MC_RTC_PLUGIN("CollisionDetectionResidualError", mc_plugin::CollisionDetectionResidualError)
+EXPORT_MC_RTC_PLUGIN("CollisionDetectionMomentumError", mc_plugin::CollisionDetectionMomentumError)

@@ -1,7 +1,6 @@
 #include "CollisionDetectionMomentumError.h"
 
 #include <mc_control/GlobalPluginMacros.h>
-#include <mc_rtc/gui/IntegerInput.h>
 
 namespace mc_plugin
 {
@@ -117,16 +116,16 @@ void CollisionDetectionMomentumError::before(mc_control::MCGlobalController & co
   momentum_hat += momentum_hat_dot*dt;
   tau_ext_hat += tau_ext_hat_dot*dt;
 
-  momentum_error_high_ = lpf_threshold_.adaptiveThreshold(momentum_error, true);
-  momentum_error_low_ = lpf_threshold_.adaptiveThreshold(momentum_error, false);
+  momentum_error_high_ = lpf_threshold_.adaptiveThreshold(tau_ext_hat_dot, true);
+  momentum_error_low_ = lpf_threshold_.adaptiveThreshold(tau_ext_hat_dot, false);
 
   obstacle_detected_ = false;
   for (int i = 0; i < jointNumber; i++)
   {
-    if (momentum_error[i] > momentum_error_high_[i] || momentum_error[i] < momentum_error_low_[i])
+    if (tau_ext_hat_dot[i] > momentum_error_high_[i] || tau_ext_hat_dot[i] < momentum_error_low_[i])
     {
       obstacle_detected_ = true;
-
+      if(activate_verbose) mc_rtc::log::info("[Collision Detection Momentum Error] Obstacle detected on joint {}", i);
       if(collision_stop_activated_)
       {
         ctl.controller().datastore().get<bool>("Obstacle detected") = obstacle_detected_;
@@ -191,7 +190,7 @@ void CollisionDetectionMomentumError::addPlot(mc_control::MCGlobalController & c
         mc_rtc::gui::plot::Y(
         "momentum_error_low(t)", [this]() { return momentum_error_low_[jointShown]; }, mc_rtc::gui::Color::Gray),
     mc_rtc::gui::plot::Y(
-        "momentum_error(t)", [this]() { return momentum_error[jointShown]; }, mc_rtc::gui::Color::Red)
+        "momentum_error(t)", [this]() { return tau_ext_hat_dot[jointShown]; }, mc_rtc::gui::Color::Red)
     );
 }
 
@@ -218,7 +217,8 @@ void CollisionDetectionMomentumError::addGui(mc_control::MCGlobalController & co
   ctl.controller().gui()->addElement({"Plugins", "CollisionDetectionMomentumError"},
     mc_rtc::gui::Button("Add plot", [this]() { return activate_plot_ = true; }),
     // Add checkbox to activate the collision stop
-    mc_rtc::gui::Checkbox("Collision stop", collision_stop_activated_), 
+    mc_rtc::gui::Checkbox("Collision stop", collision_stop_activated_),
+    mc_rtc::gui::Checkbox("Verbose", activate_verbose), 
     // Add Threshold offset input
     mc_rtc::gui::NumberInput("Threshold offset", [this](){return this->threshold_offset_;},
         [this](double offset)

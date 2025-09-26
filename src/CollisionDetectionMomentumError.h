@@ -53,8 +53,8 @@ private:
   Eigen::VectorXd tau;
   Eigen::VectorXd momentum_error;
 
-  double alpha_1 = 200.0;
-  double alpha_2 = 100.0;
+  double alpha_1 = 40.0;
+  double alpha_2 = 400.0;
 
   rbd::Coriolis * coriolis;
   rbd::ForwardDynamics forwardDynamics;
@@ -70,6 +70,7 @@ private:
   bool plot_added_ = false;
   bool collision_stop_activated_ = false;
   bool obstacle_detected_ = false;
+  bool activate_verbose = false;
 
 };
 

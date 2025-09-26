@@ -2,7 +2,7 @@
   "name": "mc-rtc-new-plugin",
   "version-string": "1.0.0",
   "homepage": "",
-  "description": "NewPlugin for mc_rtc",
+  "description": "CollisionDetectionMomentumError for mc_rtc",
   "dependencies": [
     "mc-rtc"
   ]

@@ -5,8 +5,8 @@
 #pragma once
 
 #include <mc_control/GlobalPlugin.h>
-#include <Eigen/src/Core/Matrix.h>
 #include "LpfThreshold.h"
+#include <Eigen/src/Core/Matrix.h>
 
 #include <RBDyn/Coriolis.h>
 #include <RBDyn/FA.h>
@@ -39,7 +39,6 @@ struct CollisionDetectionMomentumError : public mc_control::GlobalPlugin
   ~CollisionDetectionMomentumError() override;
 
 private:
-
   int jointNumber;
   double dt;
   double counter = 0.0;
@@ -62,8 +61,8 @@ private:
   LpfThreshold lpf_threshold_;
   double threshold_offset_ = 3.0;
   double threshold_filtering_ = 0.005;
-  Eigen::VectorXd momentum_error_high_;
-  Eigen::VectorXd momentum_error_low_;
+  Eigen::VectorXd threshold_high_;
+  Eigen::VectorXd threshold_low_;
 
   int jointShown = 0;
   bool activate_plot_ = false;
@@ -71,7 +70,6 @@ private:
   bool collision_stop_activated_ = false;
   bool obstacle_detected_ = false;
   bool activate_verbose = false;
-
 };
 
 } // namespace mc_plugin

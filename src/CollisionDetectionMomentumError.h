@@ -52,8 +52,14 @@ private:
   Eigen::VectorXd tau;
   Eigen::VectorXd momentum_error;
 
-  double alpha_1 = 40.0;
-  double alpha_2 = 400.0;
+  double alpha_1; // 2*lambda
+  double alpha_2; // lambda^2
+  double lambda = 20.0;
+  void updateAlphaFromLambda()
+  {
+    alpha_1 = 2.0 * lambda;
+    alpha_2 = lambda * lambda;
+  }
 
   rbd::Coriolis * coriolis;
   rbd::ForwardDynamics forwardDynamics;

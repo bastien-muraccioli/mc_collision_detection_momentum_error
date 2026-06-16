@@ -17,6 +17,8 @@ void CollisionDetectionMomentumError::init(mc_control::MCGlobalController & cont
   auto & realRobot = ctl.realRobot(ctl.robots()[0].name());
   auto & rjo = robot.refJointOrder();
 
+  updateAlphaFromLambda();
+
   dt = ctl.timestep();
 
   jointNumber = ctl.robot(ctl.robots()[0].name()).refJointOrder().size();
@@ -233,13 +235,13 @@ void CollisionDetectionMomentumError::addGui(mc_control::MCGlobalController & co
                                            lpf_threshold_.setFiltering(threshold_filtering_);
                                          }));
 
-  gui.addElement({"Plugins", "CollisionDetectionMomentumError"},
-                 mc_rtc::gui::NumberInput(
-                     "alpha_1", [this]() { return alpha_1; }, [this](double alpha) { this->alpha_1 = alpha; }));
-
-  gui.addElement({"Plugins", "CollisionDetectionMomentumError"},
-                 mc_rtc::gui::NumberInput(
-                     "alpha_2", [this]() { return alpha_2; }, [this](double alpha) { this->alpha_2 = alpha; }));
+  gui.addElement({"Plugins", "CollisionDetectionMomentumError"}, mc_rtc::gui::NumberInput(
+                                                                     "lambda", [this]() { return lambda; },
+                                                                     [this](double lambda)
+                                                                     {
+                                                                       this->lambda = lambda;
+                                                                       updateAlphaFromLambda();
+                                                                     }));
 
   gui.addElement({"Plugins", "CollisionDetectionMomentumError"},
                  mc_rtc::gui::IntegerInput(
